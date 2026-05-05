@@ -336,8 +336,8 @@ input[type="text"]::placeholder {
   </div>
 
   <div class="intro">
-    <p>This tool reads that file and turns your shifts into calendar events you can import anywhere.</p>
-    <p>Upload the CSV export, type your name, download a .ics file. Works with Google Calendar, Outlook, and Apple Calendar. Nothing leaves your device — all processing happens locally in your browser.</p>
+    <p>The team schedule is shared as a spreadsheet with everyone's shifts together. This tool lets each person extract their own shifts and import them directly into their calendar.</p>
+    <p>Upload the CSV export, type your name, download the .ics file. Works with Google Calendar, Outlook, and Apple Calendar. Nothing leaves your device — all processing happens locally in your browser.</p>
   </div>
 
   <div class="card">
@@ -694,7 +694,7 @@ function generate() {
     lines.push('BEGIN:VEVENT',`UID:${ev.uid}@schedule`,`SEQUENCE:0`,
       `DTSTART;TZID=America/Sao_Paulo:${ev.start}`,
       `DTEND;TZID=America/Sao_Paulo:${ev.end}`,
-      `SUMMARY:${ev.summary}`,'END:VEVENT');
+      `SUMMARY:${ev.summary}`,'TRANSP:TRANSPARENT','END:VEVENT');
   }
   lines.push('END:VCALENDAR');
   const ics = lines.join('\r\n');
