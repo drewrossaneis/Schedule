@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule — Calendar Facilitator</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #2a3140;
+  --accent: #e8520a;
+  --text: #f0f4ff;
+  --muted: #7d8fa8;
+  --green: #3dd68c;
+  --red: #ff6b6b;
+  --line: 1px solid var(--border);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  padding: 40px 24px 80px;
+}
+
+.wrap { max-width: 560px; margin: 0 auto; }
+
+/* HEADER */
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--text);
+  padding-bottom: 14px;
+  margin-bottom: 30px;
+}
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+.logo-dot { color: var(--accent); }
+.header-sub {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.8;
+  padding-bottom: 5px;
+}
+
+/* INTRO */
+.intro {
+  border-left: 4px solid var(--accent);
+  padding: 14px 18px;
+  background: var(--surface);
+  border-top: var(--line);
+  border-right: var(--line);
+  border-bottom: var(--line);
+  margin-bottom: 28px;
+}
+.intro p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--text);
+}
+.intro p + p {
+  margin-top: 10px;
+  color: var(--muted);
+}
+
+/* CARD */
+.card {
+  background: var(--surface);
+  border: var(--line);
+  padding: 26px;
+  margin-bottom: 28px;
+}
+.card-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-heading::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* FIELD */
+.field { margin-bottom: 20px; }
+.field-label {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* DROP ZONE */
+.drop-zone {
+  border: 2px dashed var(--border);
+  padding: 26px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  background: var(--bg);
+}
+.drop-zone:hover, .drop-zone.drag-over {
+  border-color: var(--accent);
+  background: rgba(201, 74, 8, 0.04);
+}
+.drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+.drop-icon { font-size: 26px; margin-bottom: 8px; }
+.drop-text { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.drop-text strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 3px; }
+.file-ok { display: none; font-size: 12px; color: var(--green); margin-top: 8px; font-weight: 500; }
+
+/* INPUT */
+input[type="text"] {
+  width: 100%;
+  background: var(--bg);
+  border: var(--line);
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  outline: none;
+  transition: border-color 0.15s;
+}
+input[type="text"]:focus { border-color: var(--accent); }
+input[type="text"]::placeholder {
+  color: var(--border);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+/* BUTTONS */
+.btn-gen {
+  width: 100%;
+  background: var(--text);
+  color: var(--bg);
+  border: none;
+  padding: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-gen:hover { background: var(--accent); }
+
+.btn-dl {
+  display: none;
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 15px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  margin-top: 12px;
+  transition: background 0.15s;
+}
+.btn-dl:hover { background: #a33a06; }
+
+/* RESULT */
+.result {
+  display: none;
+  padding: 11px 14px;
+  font-size: 12px;
+  line-height: 1.7;
+  margin-top: 14px;
+  border-left: 4px solid;
+}
+.result.ok { background: rgba(26,92,48,0.06); border-color: var(--green); color: var(--green); }
+.result.err { background: rgba(158,36,21,0.06); border-color: var(--red); color: var(--red); }
+
+/* PREVIEW */
+.preview { display: none; margin-top: 14px; border: var(--line); background: var(--bg); }
+.preview-head {
+  padding: 9px 14px;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  border-bottom: var(--line);
+}
+.preview-row {
+  padding: 7px 14px;
+  font-size: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-bottom: var(--line);
+}
+.preview-row:last-child { border-bottom: none; }
+.p-day { font-size: 10px; font-weight: 700; color: var(--muted); min-width: 58px; letter-spacing: 1px; }
+.p-work { color: var(--green); }
+.p-off { color: var(--red); }
+
+/* REIMPORT WARN */
+.reimport-warn {
+  display: none;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(201,74,8,0.06);
+  border-left: 4px solid var(--accent);
+  font-size: 11px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+/* INSTRUCTIONS SECTION */
+.section-head {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: 1px;
+  border-bottom: 3px solid var(--text);
+  padding-bottom: 10px;
+  margin-bottom: 0;
+}
+
+/* TABS */
+.tabs { display: flex; margin-top: 16px; }
+.tab-btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--bg);
+  border: var(--line);
+  cursor: pointer;
+  color: var(--muted);
+  transition: all 0.12s;
+  margin-right: -1px;
+  border-bottom: none;
+}
+.tab-btn.on {
+  background: var(--surface);
+  color: var(--accent);
+  z-index: 1;
+  position: relative;
+  border-bottom: 2px solid var(--surface);
+}
+.tab-panel {
+  display: none;
+  background: var(--surface);
+  border: var(--line);
+  padding: 22px;
+}
+.tab-panel.on { display: block; }
+
+/* APP STEPS */
+.alert {
+  padding: 10px 14px;
+  background: rgba(158,36,21,0.06);
+  border-left: 4px solid var(--red);
+  font-size: 11px;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.alert strong { color: var(--red); }
+
+.astep { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+.astep:last-child { margin-bottom: 0; }
+.astep-n {
+  width: 22px; height: 22px; min-width: 22px;
+  background: var(--text); color: var(--bg);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
+}
+.astep-body { flex: 1; }
+.astep-main { font-size: 12px; line-height: 1.6; color: var(--text); }
+.astep-note { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.7; }
+.code {
+  display: inline;
+  background: rgba(0,0,0,0.08);
+  padding: 1px 5px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.sdiv { height: 1px; background: var(--border); margin: 12px 0 12px 36px; }
+
+/* FOOTER */
+.footer {
+  margin-top: 40px;
+  padding-top: 14px;
+  border-top: var(--line);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="logo">Schedule<span class="logo-dot">.</span></div>
+    <div class="header-sub">Calendar Facilitator<br>LATAM CS Team</div>
+  </div>
+
+  <div class="intro">
+    <p>The monthly schedule comes as a spreadsheet — one tab per month, everyone's shifts together, impossible to read on a phone. This tool reads that file and turns your shifts into calendar events you can import anywhere.</p>
+    <p>Upload the CSV export, type your name, download a .ics file. Works with Google Calendar, Outlook, and Apple Calendar. Nothing leaves your device — all processing happens locally in your browser.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-heading">Generate your calendar</div>
+
+    <div class="field">
+      <span class="field-label">01 — Schedule file (CSV)</span>
+      <div class="drop-zone" id="dropZone">
+        <input type="file" id="fileInput" accept=".csv">
+        <div class="drop-icon">📄</div>
+        <div class="drop-text">
+          <strong>Drop CSV here or click to browse</strong>
+          Open the spreadsheet → File → Export / Download as CSV
+        </div>
+        <div class="file-ok" id="fileOk">✓ <span id="fileName"></span></div>
+      </div>
+    </div>
+
+    <div class="field">
+      <span class="field-label">02 — Your first name</span>
+      <input type="text" id="nameInput" placeholder="NAME">
+      <div class="hint">Exactly as it appears in the Name column of the spreadsheet.</div>
+    </div>
+
+    <button class="btn-gen" onclick="generate()">Generate Calendar</button>
+
+    <div class="result" id="result"></div>
+    <div class="preview" id="preview">
+      <div class="preview-head">Upcoming shifts — next 7 days</div>
+      <div id="previewItems"></div>
+    </div>
+    <a class="btn-dl" id="dlBtn">⬇ Download .ics</a>
+    <div class="reimport-warn" id="reimportWarn">
+      ⚠ <strong>Reimporting?</strong> Before importing the new file, delete your Work Schedule calendar and create it again fresh — otherwise events will duplicate. See the instructions below for your app.
+    </div>
+  </div>
+
+  <div class="section-head">Import instructions</div>
+
+  <div class="tabs">
+    <button class="tab-btn on" onclick="tab('google',this)">Google</button>
+    <button class="tab-btn" onclick="tab('outlook',this)">Outlook</button>
+    <button class="tab-btn" onclick="tab('apple',this)">Apple</button>
+  </div>
+
+  <!-- GOOGLE -->
+  <div class="tab-panel on" id="tp-google">
+    <div class="alert"><strong>Reimporting?</strong> Google Calendar adds new events on every import — it does not replace existing ones by UID. Always delete the Work Schedule calendar and recreate it before importing again.</div>
+    <div class="astep">
+      <div class="astep-n">1</div>
+      <div class="astep-body">
+        <div class="astep-main">Create a dedicated calendar for work shifts</div>
+        <div class="astep-note">On the web (calendar.google.com): click the <span class="code">+</span> next to "Other calendars" in the left sidebar → <span class="code">Create new calendar</span> → name it "Work Schedule" → Save. On mobile: this happens automatically when you sync — no action needed on the phone.</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">2</div>
+      <div class="astep-body">
+        <div class="astep-main">Import the .ics file</div>
+        <div class="astep-note">Go to <span class="code">Settings (gear icon) → Import &amp; Export → Import</span>. Select the downloaded .ics file. In "Add to calendar", choose <span class="code">Work Schedule</span>. Click <span class="code">Import</span>.</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">3</div>
+      <div class="astep-body">
+        <div class="astep-main">Check your phone</div>
+        <div class="astep-note">Open Google Calendar on your phone. Events sync automatically within a few minutes. If they don't appear, pull down to refresh or go to the app's Settings and tap your account to force a sync.</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">4</div>
+      <div class="astep-body">
+        <div class="astep-main">When the schedule changes — delete and redo</div>
+        <div class="astep-note">Go to <span class="code">Settings → Work Schedule → Delete calendar</span>. Create a new one with the same name. Import the new .ics file into it.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTLOOK -->
+  <div class="tab-panel" id="tp-outlook">
+    <div class="alert"><strong>Reimporting?</strong> Outlook adds events on every import. Delete the Work Schedule calendar and recreate it before importing a new .ics file.</div>
+    <div class="astep">
+      <div class="astep-n">1</div>
+      <div class="astep-body">
+        <div class="astep-main">Create a dedicated calendar</div>
+        <div class="astep-note"><strong>Desktop app:</strong> in the Calendar view, right-click <span class="code">My Calendars</span> in the left panel → <span class="code">New Calendar</span> → name it "Work Schedule".<br><br><strong>Outlook.com:</strong> go to Calendar → <span class="code">Add calendar</span> → <span class="code">Create blank calendar</span> → name it "Work Schedule".</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">2</div>
+      <div class="astep-body">
+        <div class="astep-main">Import the .ics file</div>
+        <div class="astep-note"><strong>Desktop app:</strong> <span class="code">File → Open &amp; Export → Import/Export → Import an iCalendar (.ics) file</span> → select the file → choose "Open as new calendar" or select Work Schedule when prompted.<br><br><strong>Outlook.com:</strong> Calendar → <span class="code">Add calendar</span> → <span class="code">Upload from file</span> → select the .ics → assign to Work Schedule.</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">3</div>
+      <div class="astep-body">
+        <div class="astep-main">Check your phone</div>
+        <div class="astep-note">If your Outlook account is set up on your phone (iPhone or Android), the Work Schedule calendar syncs automatically. Open the Outlook app and confirm the shifts appear. If not, go to the app settings and trigger a manual sync.</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">4</div>
+      <div class="astep-body">
+        <div class="astep-main">When the schedule changes — delete and redo</div>
+        <div class="astep-note">Right-click "Work Schedule" in the left panel → <span class="code">Delete calendar</span>. Create a new one with the same name. Import the new .ics file.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLE -->
+  <div class="tab-panel" id="tp-apple">
+    <div class="alert"><strong>Reimporting?</strong> Apple Calendar creates duplicates on reimport. Delete the Work Schedule calendar and recreate it before importing a new .ics file.</div>
+    <div class="astep">
+      <div class="astep-n">1</div>
+      <div class="astep-body">
+        <div class="astep-main">Create a dedicated calendar</div>
+        <div class="astep-note"><strong>Mac:</strong> <span class="code">File → New Calendar</span> → name it "Work Schedule". Choose iCloud as the source so it syncs to your iPhone automatically.<br><br><strong>iPhone:</strong> Open Calendar → tap <span class="code">Calendars</span> at the bottom → <span class="code">Add Calendar</span> → name it "Work Schedule".</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">2</div>
+      <div class="astep-body">
+        <div class="astep-main">Import the .ics file</div>
+        <div class="astep-note"><strong>Mac:</strong> double-click the downloaded .ics file — Calendar opens and asks which calendar to add events to. Choose "Work Schedule".<br><br><strong>iPhone:</strong> tap the .ics file in Files or your email/downloads. Calendar opens and asks where to add it. Choose "Work Schedule".</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">3</div>
+      <div class="astep-body">
+        <div class="astep-main">Sync across devices</div>
+        <div class="astep-note">If the calendar is in iCloud, it syncs automatically to all Apple devices signed in to the same Apple ID. Allow a few minutes. To force it: <span class="code">Settings → [your name] → iCloud → Calendars</span> → toggle off and on.</div>
+      </div>
+    </div>
+    <div class="sdiv"></div>
+    <div class="astep">
+      <div class="astep-n">4</div>
+      <div class="astep-body">
+        <div class="astep-main">When the schedule changes — delete and redo</div>
+        <div class="astep-note"><strong>Mac:</strong> right-click "Work Schedule" in the calendar list → <span class="code">Delete</span>. Create it again, import the new file.<br><strong>iPhone:</strong> Calendars → tap <span class="code">ⓘ</span> next to Work Schedule → <span class="code">Delete Calendar</span>. Create a new one and import.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">All data stays on your device — nothing is sent to any server.</div>
+
+</div>
+
+<script>
+let csvContent = '', icsBlob = null;
+
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    csvContent = ev.target.result;
+    document.getElementById('fileOk').style.display = 'block';
+    document.getElementById('fileName').textContent = file.name;
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+const dz = document.getElementById('dropZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault();
+  dz.classList.remove('drag-over');
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    csvContent = ev.target.result;
+    document.getElementById('fileOk').style.display = 'block';
+    document.getElementById('fileName').textContent = file.name;
+  };
+  reader.readAsText(file, 'UTF-8');
+});
+
+function tab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tp-' + id).classList.add('on');
+}
+
+function parseTime(s) {
+  s = (s || '').trim();
+  if (!s || ['off', '-', ''].includes(s.toLowerCase())) return null;
+  const m = s.match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  return { h: parseInt(m[1]), m: parseInt(m[2]) };
+}
+function isOff(s) { return (s || '').trim().toLowerCase() === 'off'; }
+function parseDate(s) {
+  s = (s || '').trim();
+  if (!s) return null;
+  const months = { jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11,january:0,february:1,march:2,april:3,june:5,july:6,august:7,september:8,october:9,november:10,december:11 };
+  const m = s.match(/^(\d{1,2})-([a-zA-Z]+)$/);
+  if (!m) return null;
+  const day = parseInt(m[1]), mon = months[m[2].toLowerCase()];
+  if (mon === undefined) return null;
+  let year = new Date().getFullYear();
+  const d = new Date(year, mon, day);
+  const today = new Date(); today.setHours(0,0,0,0);
+  if ((d - today) / 86400000 < -180) d.setFullYear(year + 1);
+  return d;
+}
+function fdt(date, time) {
+  const d = new Date(date); d.setHours(time.h, time.m, 0, 0);
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}T${p(d.getHours())}${p(d.getMinutes())}00`;
+}
+function uid(tag) { return 'okto' + tag.replace(/[:\-\s]/g,''); }
+function nextDay(date) { const d = new Date(date); d.setDate(d.getDate()+1); return d; }
+function dkey(date) { const d = new Date(date); return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`; }
+function sameDay(a,b) { return dkey(a) === dkey(b); }
+function pad(n) { return String(n).padStart(2,'0'); }
+
+function generate() {
+  const resultEl = document.getElementById('result');
+  const dlBtn = document.getElementById('dlBtn');
+  const previewEl = document.getElementById('preview');
+  const warnEl = document.getElementById('reimportWarn');
+  resultEl.style.display = 'none';
+  dlBtn.style.display = 'none';
+  previewEl.style.display = 'none';
+  warnEl.style.display = 'none';
+
+  if (!csvContent) { showErr('Please upload a CSV file first.'); return; }
+  const nameRaw = document.getElementById('nameInput').value.trim().toUpperCase();
+  if (!nameRaw) { showErr('Please enter your name as it appears in the spreadsheet.'); return; }
+
+  const nameParts = nameRaw.split(/\s+/);
+  const firstname = nameParts[nameParts.length - 1];
+  const surname = nameParts.slice(0, -1).join(' ');
+
+  const content = csvContent.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rows = content.split('\n').map(l => l.split(';'));
+  let raw = [], blocks = 0, i = 0;
+
+  while (i < rows.length) {
+    const row = rows[i];
+    if (row.length > 1 && row[0].trim().toLowerCase() === 'surname') {
+      let dateRowIdx=null, brazilRowIdx=null, seRowIdx=null;
+      for (let j=i+1; j<Math.min(i+5,rows.length); j++) { if (rows[j].some(c=>parseDate(c))) { dateRowIdx=j; break; } }
+      for (let j=i+1; j<Math.min(i+7,rows.length); j++) { if (rows[j].some(c=>c.toLowerCase().includes('brazil'))) { brazilRowIdx=j; break; } }
+      for (let j=i+1; j<Math.min(i+9,rows.length); j++) {
+        const cells = rows[j].map(c=>c.trim().toLowerCase());
+        if (cells.includes('start') && cells.includes('end')) { seRowIdx=j; break; }
+      }
+      if (dateRowIdx===null || brazilRowIdx===null || seRowIdx===null) { i++; continue; }
+      const drow=rows[dateRowIdx], brow=rows[brazilRowIdx], serow=rows[seRowIdx];
+      const brazilCols = [];
+      for (let col=0; col<brow.length; col++) {
+        if (!brow[col].toLowerCase().includes('brazil')) continue;
+        let si=null, ei=null;
+        for (let c=col; c<Math.min(col+5,serow.length); c++) {
+          const v=serow[c].trim().toLowerCase();
+          if (v==='start' && si===null) si=c;
+          else if (v==='end' && ei===null) ei=c;
+        }
+        if (si===null || ei===null) continue;
+        let colDate=null;
+        for (let c=col; c>Math.max(-1,col-10); c--) {
+          if (c<drow.length) { const d=parseDate(drow[c]); if(d){colDate=d;break;} }
+        }
+        if (colDate) brazilCols.push([si,ei,colDate]);
+      }
+      if (!brazilCols.length) { i++; continue; }
+      blocks++;
+      let myRow=null, j=seRowIdx+1;
+      while (j<rows.length) {
+        const r=rows[j]; if(r.length<2){j++;continue;}
+        if (r[0].trim().toLowerCase()==='surname') break;
+        const sn=r[0].trim().toUpperCase(), fn=r[1].trim().toUpperCase();
+        if (sn.includes(surname) && fn.includes(firstname)) { myRow=r; break; }
+        if (fn.includes(surname) && sn.includes(firstname)) { myRow=r; break; }
+        j++;
+      }
+      if (myRow) {
+        for (const [si,ei,colDate] of brazilCols) {
+          if (si>=myRow.length || ei>=myRow.length) continue;
+          const sv=myRow[si], ev=myRow[ei];
+          if (isOff(sv)||isOff(ev)) { raw.push([colDate,'off',null,null]); }
+          else { const st=parseTime(sv), et=parseTime(ev); if(!st||!et)continue; raw.push([colDate,'shift',st,et]); }
+        }
+      }
+      i=j;
+    } else { i++; }
+  }
+
+  if (!raw.length) { showErr(`No shifts found for "${nameRaw}". Check that the name matches exactly as shown in the spreadsheet.`); return; }
+
+  const overnightEnd = {};
+  for (const [colDate,typ,st,et] of raw) {
+    if (typ==='shift') {
+      const sdt=new Date(colDate); sdt.setHours(st.h,st.m);
+      const edt=new Date(colDate); edt.setHours(et.h,et.m);
+      if (edt<=sdt) edt.setDate(edt.getDate()+1);
+      if (!sameDay(sdt,edt)) overnightEnd[dkey(edt)]={h:et.h,m:et.m,date:edt};
+    }
+  }
+
+  const events=[], seen=new Set();
+  const dayOffSet = new Set(raw.filter(r=>r[1]==='off').map(r=>dkey(r[0])));
+
+  for (const [colDate,typ,st,et] of raw) {
+    if (typ==='shift') {
+      const sdt=new Date(colDate); sdt.setHours(st.h,st.m);
+      const edt=new Date(colDate); edt.setHours(et.h,et.m);
+      if (edt<=sdt) edt.setDate(edt.getDate()+1);
+      const crossesMidnight=!sameDay(sdt,edt), nextD=nextDay(colDate), nextIsOff=dayOffSet.has(dkey(nextD));
+      if (crossesMidnight && nextIsOff) {
+        const u1=uid(`${dkey(colDate)}${st.h}${st.m}pt1`);
+        if (!seen.has(u1)) { seen.add(u1); events.push({uid:u1,start:fdt(colDate,st),end:fdt(colDate,{h:23,m:59}),summary:`🟢 ${pad(st.h)}:${pad(st.m)}–23:59`,date:new Date(colDate),type:'shift'}); }
+        const u2=uid(`${dkey(nextD)}0000pt2`);
+        if (!seen.has(u2)) { seen.add(u2); events.push({uid:u2,start:fdt(nextD,{h:0,m:0}),end:fdt(nextD,{h:et.h,m:et.m}),summary:`🟢 00:00–${pad(et.h)}:${pad(et.m)}`,date:new Date(nextD),type:'shift'}); }
+      } else {
+        const u=uid(`${dkey(colDate)}${st.h}${st.m}`);
+        if (!seen.has(u)) {
+          seen.add(u);
+          const endTime = crossesMidnight ? fdt(nextDay(colDate),et) : fdt(colDate,et);
+          events.push({uid:u,start:fdt(colDate,st),end:endTime,summary:`🟢 ${pad(st.h)}:${pad(st.m)}–${pad(et.h)}:${pad(et.m)}`,date:new Date(colDate),type:'shift'});
+        }
+      }
+    } else {
+      const offStart = overnightEnd[dkey(colDate)] ? overnightEnd[dkey(colDate)] : {h:0,m:0};
+      const offStartDate = overnightEnd[dkey(colDate)] ? overnightEnd[dkey(colDate)].date : colDate;
+      const u=uid(`${dkey(colDate)}off`);
+      if (!seen.has(u)) { seen.add(u); events.push({uid:u,start:fdt(offStartDate,offStart),end:fdt(colDate,{h:23,m:59}),summary:'🔴 OFF',date:new Date(colDate),type:'off'}); }
+    }
+  }
+
+  events.sort((a,b) => a.start.localeCompare(b.start));
+
+  const lines = [
+    'BEGIN:VCALENDAR','VERSION:2.0',
+    'PRODID:-//Schedule//PT//','CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH','X-WR-CALNAME:Work Schedule',
+    'X-WR-TIMEZONE:America/Sao_Paulo'
+  ];
+  for (const ev of events) {
+    lines.push('BEGIN:VEVENT',`UID:${ev.uid}@schedule`,`SEQUENCE:0`,
+      `DTSTART;TZID=America/Sao_Paulo:${ev.start}`,
+      `DTEND;TZID=America/Sao_Paulo:${ev.end}`,
+      `SUMMARY:${ev.summary}`,'END:VEVENT');
+  }
+  lines.push('END:VCALENDAR');
+  const ics = lines.join('\r\n');
+
+  const shiftCount = events.filter(e=>e.type==='shift').length;
+  const offCount   = events.filter(e=>e.type==='off').length;
+  resultEl.className = 'result ok';
+  resultEl.textContent = `✓ Found ${shiftCount} shift(s) and ${offCount} day(s) off across ${blocks} week(s).`;
+  resultEl.style.display = 'block';
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const upcoming = events.filter(e=>e.date>=today).slice(0,7);
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  document.getElementById('previewItems').innerHTML = upcoming.map(ev => {
+    const d=ev.date, label=`${days[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}`;
+    const cls = ev.type==='shift' ? 'p-work' : 'p-off';
+    return `<div class="preview-row"><span class="p-day">${label}</span><span class="${cls}">${ev.summary}</span></div>`;
+  }).join('');
+  previewEl.style.display = 'block';
+
+  const blob = new Blob([ics], {type:'text/calendar;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  dlBtn.href = url;
+  dlBtn.download = 'work_schedule.ics';
+  dlBtn.style.display = 'block';
+  warnEl.style.display = 'block';
+}
+
+function showErr(msg) {
+  const el = document.getElementById('result');
+  el.className = 'result err';
+  el.textContent = '✗ ' + msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>
