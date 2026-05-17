@@ -338,7 +338,7 @@ input[type="text"]::placeholder {
 
   <div class="intro">
     <p>The team schedule is shared as a spreadsheet with everyone's shifts together. This tool lets each person extract their own shifts and import them directly into their calendar.</p>
-    <p>Upload the CSV export, type your name, download the .ics file. Works with Google Calendar, Outlook, and Apple Calendar. Nothing leaves your device — all processing happens locally in your browser.</p>
+    <p>Upload the CSV export, type your name, download the .ics file. Works with Google Calendar, and Apple Calendar. Nothing leaves your device — all processing happens locally in your browser.</p>
   </div>
 
   <div class="card">
@@ -380,8 +380,7 @@ input[type="text"]::placeholder {
 
   <div class="tabs">
     <button class="tab-btn on" onclick="tab('google',this)">Google</button>
-    <button class="tab-btn" onclick="tab('outlook',this)">Outlook</button>
-    <button class="tab-btn" onclick="tab('apple',this)">Apple</button>
+      <button class="tab-btn" onclick="tab('apple',this)">Apple</button>
   </div>
 
   <!-- GOOGLE -->
@@ -416,42 +415,6 @@ input[type="text"]::placeholder {
       <div class="astep-body">
         <div class="astep-main">When the schedule changes — delete and redo</div>
         <div class="astep-note">Go to <span class="code">Settings → Work Schedule → Delete calendar</span>. Create a new one with the same name. Import the new .ics file into it.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- OUTLOOK -->
-  <div class="tab-panel" id="tp-outlook">
-    <div class="alert"><strong>Reimporting?</strong> Outlook adds events on every import. Delete the Work Schedule calendar and recreate it before importing a new .ics file.</div>
-    <div class="astep">
-      <div class="astep-n">1</div>
-      <div class="astep-body">
-        <div class="astep-main">Create a dedicated calendar</div>
-        <div class="astep-note"><strong>Desktop app:</strong> in the Calendar view, right-click <span class="code">My Calendars</span> in the left panel → <span class="code">New Calendar</span> → name it "Work Schedule".<br><br><strong>Outlook.com:</strong> go to Calendar → <span class="code">Add calendar</span> → <span class="code">Create blank calendar</span> → name it "Work Schedule".</div>
-      </div>
-    </div>
-    <div class="sdiv"></div>
-    <div class="astep">
-      <div class="astep-n">2</div>
-      <div class="astep-body">
-        <div class="astep-main">Import the .ics file</div>
-        <div class="astep-note"><strong>Desktop app:</strong> <span class="code">File → Open &amp; Export → Import/Export → Import an iCalendar (.ics) file</span> → select the file → choose "Open as new calendar" or select Work Schedule when prompted.<br><br><strong>Outlook.com:</strong> Calendar → <span class="code">Add calendar</span> → <span class="code">Upload from file</span> → select the .ics → assign to Work Schedule.</div>
-      </div>
-    </div>
-    <div class="sdiv"></div>
-    <div class="astep">
-      <div class="astep-n">3</div>
-      <div class="astep-body">
-        <div class="astep-main">Check your phone</div>
-        <div class="astep-note">If your Outlook account is set up on your phone (iPhone or Android), the Work Schedule calendar syncs automatically. Open the Outlook app and confirm the shifts appear. If not, go to the app settings and trigger a manual sync.</div>
-      </div>
-    </div>
-    <div class="sdiv"></div>
-    <div class="astep">
-      <div class="astep-n">4</div>
-      <div class="astep-body">
-        <div class="astep-main">When the schedule changes — delete and redo</div>
-        <div class="astep-note">Right-click "Work Schedule" in the left panel → <span class="code">Delete calendar</span>. Create a new one with the same name. Import the new .ics file.</div>
       </div>
     </div>
   </div>
